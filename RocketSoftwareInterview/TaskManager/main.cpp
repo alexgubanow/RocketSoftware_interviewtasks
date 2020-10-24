@@ -22,6 +22,14 @@ int main()
 	{
 		std::cout << "Error while parsing:\n" << ex.what() << "\nClosing";
 	}
+	try
+	{
+		validateTasks(pool);
+	}
+	catch (const std::exception& ex)
+	{
+		std::cout << "Error while executing:\n" << ex.what() << "\nClosing";
+	}
 }
 
 void parseInputSTR(const std::string& schedulesSTR, std::vector<Task>& pool)
@@ -48,4 +56,32 @@ void parseInputSTR(const std::string& schedulesSTR, std::vector<Task>& pool)
 			}
 		}
 	}
+}
+
+void validateTasks(const std::vector<Task>& pool)
+{
+	std::vector<Task> noPrerequisitesCount;
+	for (auto& task : pool)
+	{
+		if (task.prerequisites.size() == 0)
+		{
+			noPrerequisitesCount.push_back(task);
+		}
+	}
+	if (noPrerequisitesCount.size() > 1)
+	{
+		//TODO show what root tasks are founded
+		throw std::exception("multiple branches detected");
+	}
+	if (noPrerequisitesCount.size() == 0)
+	{
+		throw std::exception("cyclic dependency detected, no root task founded");
+	}
+
+	int stepsNeeded = 0;
+	while (true)
+	{
+		break;
+	}
+	std::cout << "Given tasks can be executed in: " << stepsNeeded << " steps\n";
 }

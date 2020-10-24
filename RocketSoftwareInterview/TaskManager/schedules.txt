@@ -1,4 +1,4 @@
-a: b c a
+a: b c
 b: z
 c: z
 d: z
