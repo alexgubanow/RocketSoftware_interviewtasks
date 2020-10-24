@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "utils.h"
 
@@ -55,12 +56,23 @@ public:
 		{
 			throw std::exception("no root task founded, probably exist cyclic dependency");
 		}
+		for (auto& task : pool)
+		{
+			for (auto& prerequisite : task.prerequisites)
+			{
+				if (std::count_if(pool.begin(), pool.end(), [prerequisite](Task t) { return t.name == prerequisite; }) == 0)
+				{
+					//TODO show what are founded
+					throw std::exception("unresolvable dependencies found");
+				}
+			}
+		}
 		rootTaskName = currStepTasks[0].name;
 	}
 
 	static int countStepsNeeded(const std::vector<Task>& pool, const std::string& rootTaskName)
 	{
-		int stepsNeeded = 1;
+		size_t stepsNeeded = 1;
 		std::vector<std::string> currStepTasks{ rootTaskName };
 		while (stepsNeeded < pool.size())
 		{
