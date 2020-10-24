@@ -68,7 +68,7 @@ public:
 				if (std::count_if(pool.begin(), pool.end(), [prerequisite](Task t) { return t.name == prerequisite; }) == 0)
 				{
 					std::ostringstream errStream;
-					errStream << "unresolvable dependencies found, task name:\n" << prerequisite;
+					errStream << "unresolvable dependencies founded, task name:\n" << prerequisite;
 					throw std::exception(errStream.str().c_str());
 				}
 			}
@@ -89,11 +89,13 @@ public:
 				{
 					if (std::find(taskITR->prerequisites.begin(), taskITR->prerequisites.end(), currStepTask->name) != taskITR->prerequisites.end())
 					{
-						nextStepTasks.push_back(taskITR);
-						if (taskITR->name == currStepTask->name)
+						if (std::find(currStepTask->prerequisites.begin(), currStepTask->prerequisites.end(), taskITR->name) != currStepTask->prerequisites.end())
 						{
-							throw std::exception("cyclic dependency founded");
+							std::ostringstream errStream;
+							errStream << "cyclic dependency founded, task names:\n" << taskITR->name << '\n' << currStepTask->name;
+							throw std::exception(errStream.str().c_str());
 						}
+						nextStepTasks.push_back(taskITR);
 					}
 				}
 			}
