@@ -49,8 +49,13 @@ public:
 		}
 		if (currStepTasks.size() > 1)
 		{
-			//TODO show what root tasks are founded
-			throw std::exception("multiple branches detected");
+			std::ostringstream errStream;
+			errStream << "multiple branches detected, list of founded tasks:\n";
+			for (auto& task : currStepTasks)
+			{
+				errStream << task.name << '\n';
+			}
+			throw std::exception(errStream.str().c_str());
 		}
 		if (currStepTasks.size() == 0)
 		{
@@ -62,8 +67,9 @@ public:
 			{
 				if (std::count_if(pool.begin(), pool.end(), [prerequisite](Task t) { return t.name == prerequisite; }) == 0)
 				{
-					//TODO show what are founded
-					throw std::exception("unresolvable dependencies found");
+					std::ostringstream errStream;
+					errStream << "unresolvable dependencies found, task name:\n" << prerequisite;
+					throw std::exception(errStream.str().c_str());
 				}
 			}
 		}
