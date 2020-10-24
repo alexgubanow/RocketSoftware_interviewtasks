@@ -39,25 +39,25 @@ public:
 
 	static void validateTasks(const std::vector<Task>& pool, std::string& rootTaskName)
 	{
-		std::vector<Task> currStepTasks;
+		std::vector<Task> rootTasks;
 		for (auto& task : pool)
 		{
 			if (task.prerequisites.size() == 0)
 			{
-				currStepTasks.push_back(task);
+				rootTasks.push_back(task);
 			}
 		}
-		if (currStepTasks.size() > 1)
+		if (rootTasks.size() > 1)
 		{
 			std::ostringstream errStream;
 			errStream << "multiple branches detected, list of founded tasks:\n";
-			for (auto& task : currStepTasks)
+			for (auto& task : rootTasks)
 			{
 				errStream << task.name << '\n';
 			}
 			throw std::exception(errStream.str().c_str());
 		}
-		if (currStepTasks.size() == 0)
+		if (rootTasks.size() == 0)
 		{
 			throw std::exception("no root task founded, probably exist cyclic dependency");
 		}
@@ -73,7 +73,7 @@ public:
 				}
 			}
 		}
-		rootTaskName = currStepTasks[0].name;
+		rootTaskName = rootTasks[0].name;
 	}
 
 	static int countStepsNeeded(const std::vector<Task>& pool, const std::string& rootTaskName)
