@@ -60,28 +60,48 @@ void parseInputSTR(const std::string& schedulesSTR, std::vector<Task>& pool)
 
 void validateTasks(const std::vector<Task>& pool)
 {
-	std::vector<Task> noPrerequisitesCount;
+	std::vector<Task> currStepTasks;
 	for (auto& task : pool)
 	{
 		if (task.prerequisites.size() == 0)
 		{
-			noPrerequisitesCount.push_back(task);
+			currStepTasks.push_back(task);
 		}
 	}
-	if (noPrerequisitesCount.size() > 1)
+	if (currStepTasks.size() > 1)
 	{
 		//TODO show what root tasks are founded
 		throw std::exception("multiple branches detected");
 	}
-	if (noPrerequisitesCount.size() == 0)
+	if (currStepTasks.size() == 0)
 	{
-		throw std::exception("cyclic dependency detected, no root task founded");
+		throw std::exception("no root task founded, probably exist cyclic dependency");
 	}
 
-	int stepsNeeded = 0;
-	while (true)
+	int stepsNeeded = 1;
+	while (stepsNeeded < pool.size())
 	{
-		break;
+		std::vector<Task> nextStepTasks;
+		for (auto& task : pool)
+		{
+			for (auto& currStepTask : currStepTasks)
+			{
+				if (std::find(task.prerequisites.begin(), task.prerequisites.end(), currStepTask.name) != task.prerequisites.end())
+				{
+					nextStepTasks.push_back(task);
+				}
+			}
+		}
+		if (nextStepTasks.size() == 0)
+		{
+			break;
+		}
+		stepsNeeded++;
+		currStepTasks = nextStepTasks;
+	}
+	if (stepsNeeded == 1 && pool.size() > 1)
+	{
+		throw std::exception("multiple branches detected");
 	}
 	std::cout << "Given tasks can be executed in: " << stepsNeeded << " steps\n";
 }
