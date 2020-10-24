@@ -1,12 +1,10 @@
 # RocketSoftware interview tasks solution
 Originally it consist two tasks given in word files. It names efficient-memory and task-manager.
 # efficient-memory task 
-## long story short:
 Your program should respond with number of times it has encountered a given input, in same time it should be comparably quick with 10 words and 1000000 words
 ## Choosen implementation:
 I've decided to use std::map, since it has constant access time O(log N) and it is compably quick. Let's calculate log(10)=1, log(1000000)=6. It means with O(log N) access time will grow by 5 times. In my opinion 5 times increase is way better than 100000 times.
 # task-manager task 
-## long story short:
 Your program should count how many steps needed to execute tasks from list. Tasks are expressed as string, where each tasks are separated by '\n',  task prerequisites goes after ':' and separated by ' '. Some inputs may contain cyclic/unresolvable dependencies, multiple branches etc. Need cater for such cases.
 ## Choosen implementation:
 I've done this in three parts: parsing input, validating tasks and counting steps. On all steps I've implemented guards from possible wrong or broken input.
