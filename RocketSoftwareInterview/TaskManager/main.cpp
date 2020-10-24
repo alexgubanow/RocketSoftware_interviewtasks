@@ -21,7 +21,7 @@ int main()
 	{
 		std::cout << "Error while parsing:\n" << ex.what() << "\nClosing";
 	}
-	std::string rootTaskName;
+	std::vector<Task>::const_iterator rootTaskName;
 	try
 	{
 		Task::validateTasks(pool, rootTaskName);

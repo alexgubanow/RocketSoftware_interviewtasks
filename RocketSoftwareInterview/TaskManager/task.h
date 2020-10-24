@@ -37,14 +37,14 @@ public:
 		}
 	}
 
-	static void validateTasks(const std::vector<Task>& pool, std::string& rootTaskName)
+	static void validateTasks(const std::vector<Task>& pool, std::vector<Task>::const_iterator& rootTaskITR)
 	{
-		std::vector<Task> rootTasks;
-		for (auto& task : pool)
+		std::vector<std::vector<Task>::const_iterator> rootTasks;
+		for (auto taskITR = pool.begin(); taskITR < pool.end(); taskITR++)
 		{
-			if (task.prerequisites.size() == 0)
+			if (taskITR->prerequisites.size() == 0)
 			{
-				rootTasks.push_back(task);
+				rootTasks.push_back(taskITR);
 			}
 		}
 		if (rootTasks.size() > 1)
@@ -53,7 +53,7 @@ public:
 			errStream << "multiple branches detected, list of founded tasks:\n";
 			for (auto& task : rootTasks)
 			{
-				errStream << task.name << '\n';
+				errStream << task->name << '\n';
 			}
 			throw std::exception(errStream.str().c_str());
 		}
@@ -68,28 +68,34 @@ public:
 				if (std::count_if(pool.begin(), pool.end(), [prerequisite](Task t) { return t.name == prerequisite; }) == 0)
 				{
 					std::ostringstream errStream;
-					errStream << "unresolvable dependencies found, task name:\n" << prerequisite;
+					errStream << "unresolvable dependencies founded, task name:\n" << prerequisite;
 					throw std::exception(errStream.str().c_str());
 				}
 			}
 		}
-		rootTaskName = rootTasks[0].name;
+		rootTaskITR = rootTasks[0];
 	}
 
-	static int countStepsNeeded(const std::vector<Task>& pool, const std::string& rootTaskName)
+	static int countStepsNeeded(const std::vector<Task>& pool, std::vector<Task>::const_iterator& rootTaskITR)
 	{
 		size_t stepsNeeded = 1;
-		std::vector<std::string> currStepTasks{ rootTaskName };
+		std::vector<std::vector<Task>::const_iterator> currStepTasks{ rootTaskITR };
 		while (stepsNeeded < pool.size())
 		{
-			std::vector<std::string> nextStepTasks;
-			for (auto& task : pool)
+			std::vector<std::vector<Task>::const_iterator> nextStepTasks;
+			for (auto& currStepTask : currStepTasks)
 			{
-				for (auto& currStepTask : currStepTasks)
+				for (auto taskITR = pool.begin(); taskITR < pool.end(); taskITR++)
 				{
-					if (std::find(task.prerequisites.begin(), task.prerequisites.end(), currStepTask) != task.prerequisites.end())
+					if (std::find(taskITR->prerequisites.begin(), taskITR->prerequisites.end(), currStepTask->name) != taskITR->prerequisites.end())
 					{
-						nextStepTasks.push_back(task.name);
+						if (std::find(currStepTask->prerequisites.begin(), currStepTask->prerequisites.end(), taskITR->name) != currStepTask->prerequisites.end())
+						{
+							std::ostringstream errStream;
+							errStream << "cyclic dependency founded, task names:\n" << taskITR->name << '\n' << currStepTask->name;
+							throw std::exception(errStream.str().c_str());
+						}
+						nextStepTasks.push_back(taskITR);
 					}
 				}
 			}
