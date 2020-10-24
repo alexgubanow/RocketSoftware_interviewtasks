@@ -140,12 +140,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="task.cpp" />
-    <ClCompile Include="taskManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="task.h" />
-    <ClInclude Include="taskManager.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
